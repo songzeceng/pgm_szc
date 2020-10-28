@@ -1634,7 +1634,7 @@ static int prepare_graph_private_mem(void)
 
 	if (gGraphs == 0)
 	{
-		gGraphs = new (nothrow) struct pgm_graph[PGM_MAX_GRAPHS];
+		gGraphs = new struct pgm_graph[PGM_MAX_GRAPHS];
 		if (gGraphs)
 		{
 			memset(gGraphs, 0, sizeof(struct pgm_graph)*PGM_MAX_GRAPHS);

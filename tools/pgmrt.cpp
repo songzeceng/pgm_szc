@@ -29,6 +29,16 @@
 #else
 // some useful routines from litmus that are useful
 // without using litmus all together.
+
+#include <linux/unistd.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+inline pid_t gettid(void)
+{
+	return syscall(__NR_gettid);
+}
+#endif
+
 #define s2ns(s)   ((s)*1000000000LL)
 #define s2us(s)   ((s)*1000000LL)
 #define s2ms(s)   ((s)*1000LL)
@@ -41,14 +51,6 @@
 #define us2ms(us) ((us)/1000LL)
 #define us2s(us)  ((us)/1000000LL)
 #define ms2s(ms)  ((ms)/1000LL)
-#include <linux/unistd.h>
-#include <sys/syscall.h>
-#include <unistd.h>
-inline pid_t gettid(void)
-{
-	return syscall(__NR_gettid);
-}
-#endif
 
 //#define VERBOSE
 
@@ -68,7 +70,7 @@ if(__ret < 0) { \
 
 // macro to boost priority of tasks waiting for tokens
 // when compiled for Litmus.
-#ifdef _USE_LITMUS
+/*#ifdef _USE_LITMUS
 // waiting task's priority is boosted as needed
 #define litmus_pgm_wait(statements) \
 	enter_pgm_wait(); \
@@ -83,7 +85,7 @@ if(__ret < 0) { \
 #else
 #define litmus_pgm_wait(statements) statements
 #define litmus_pgm_complete(statements) statements
-#endif
+#endif*/
 
 // trace macro for VERBOSE
 #ifdef VERBOSE
@@ -417,13 +419,13 @@ void work_thread(rt_config cfg)
 //	param.phase = cfg.phase_ns;
 	param.period = cfg.period_ns;
 	param.exec_cost = cfg.execution_ns;
-	param.split = cfg.split_factor;
+//	param.split = cfg.split_factor;
 	if(cfg.cluster >= 0)
 		param.cpu = domain_to_first_cpu(cfg.cluster);
 	param.budget_policy = (cfg.budget) ? PRECISE_ENFORCEMENT : NO_ENFORCEMENT;
 	param.release_policy = (isSrc) ? TASK_PERIODIC : TASK_EARLY;
 
-	if (isSrc && isSink)
+/*	if (isSrc && isSink)
 		param.pgm_type = PGM_SRC_SINK;
 	else if(isSrc)
 		param.pgm_type = PGM_SRC;
@@ -432,7 +434,7 @@ void work_thread(rt_config cfg)
 	else
 		param.pgm_type = PGM_INTERNAL;
 
-	param.pgm_expected_etoe = cfg.expected_etoe;
+	param.pgm_expected_etoe = cfg.expected_etoe;*/
 
 	if(cfg.cluster >= 0) {
 		// Set our CPU affinity mask to put us on our cluster's
@@ -477,7 +479,7 @@ void work_thread(rt_config cfg)
 		// has been pushed down into the OS kernel.
 		if(!isSrc) {
 			T("(x) %s waits for tokens\n", pgm_get_name(cfg.node));
-			litmus_pgm_wait(ret = pgm_wait(cfg.node););
+			// litmus_pgm_wait(ret = pgm_wait(cfg.node););
 		}
 
 #ifndef _USE_LITMUS
@@ -502,7 +504,7 @@ void work_thread(rt_config cfg)
 			else {
 				T("(+) %s fired for %d time\n", pgm_get_name(cfg.node), count);
 
-				litmus_pgm_complete(CheckError(pgm_complete(cfg.node)););
+				// litmus_pgm_complete(CheckError(pgm_complete(cfg.node)););
 
 #ifdef _USE_LITMUS
 				sleep_next_period();

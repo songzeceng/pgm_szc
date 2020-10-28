@@ -12,7 +12,7 @@ host-arch := $(shell uname -m | \
 ARCH ?= ${host-arch}
 
 # LIBLITMUS -- where to find liblitmus?
-LIBLITMUS ?= ../liblitmus
+LIBLITMUS ?= /home/rtlab/szc/litmus/liblitmus
 
 # Where to find libpgm?
 LIBPGM = .
@@ -28,7 +28,7 @@ flags-debug    = -Wall -Werror -Wno-unused-function -Wno-sign-compare
 flags-api      = -D_XOPEN_SOURCE=600 -D_GNU_SOURCE -pthread
 
 # Comment out 'flags-litmus' to disable Litmus support
-#flags-litmus   = -D_USE_LITMUS
+flags-litmus   = -D_USE_LITMUS
 
 # architecture-specific flags
 flags-i386     = -m32
